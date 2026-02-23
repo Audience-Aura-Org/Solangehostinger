@@ -42,7 +42,7 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className={`fixed w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-8'}`}>
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-8'}`}>
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex justify-between items-center">
 
