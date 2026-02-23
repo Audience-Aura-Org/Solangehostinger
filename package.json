@@ -1,0 +1,38 @@
+{
+  "name": "solange",
+  "version": "1.0.0",
+  "description": "Premium Liquid Glass Hair Braiding Salon Website & Booking Management",
+  "homepage": "https://solange-hair-braiding.com",
+  "author": "Solange Hair Braiding",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^8.8.0",
+    "@tailwindcss/postcss": "^4.2.0",
+    "@types/nodemailer": "^7.0.11",
+    "bcryptjs": "^3.0.3",
+    "framer-motion": "^12.34.3",
+    "html2canvas": "^1.4.1",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^4.2.0",
+    "mongoose": "^9.2.1",
+    "next": "^16.1.6",
+    "nodemailer": "^8.0.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "stripe": "^20.3.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.10.6",
+    "@types/react": "19.2.14",
+    "typescript": "^5.3.3"
+  }
+}
