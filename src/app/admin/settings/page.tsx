@@ -35,34 +35,64 @@ const DEFAULTS: Settings = {
 function genId() { return 'media-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 
 // ─── Upload helper: converts File → data URL, sends to /api/admin/upload ──
+// Specifically loops chunks to avoid Vercel's 4.5MB Serverless request limit!
 async function uploadFile(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async () => {
-            try {
-                const res = await fetch('/api/admin/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filename: file.name, dataUrl: reader.result }),
-                });
+    // We chunk base64 data to < 3MB (~2.2MB raw) so requests never
+    // get intercepted by Vercel's 4.5MB function payload strict limit.
+    const CHUNK_SIZE = 2 * 1024 * 1024; // 2 MB raw bytes per chunk
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
-                // Read as text first — if the server returned a non-JSON body
-                // (e.g. "Request Entity Too Large") we still get a clean error.
-                const text = await res.text();
-                let data: any;
-                try {
-                    data = JSON.parse(text);
-                } catch {
-                    throw new Error(`Server error (${res.status}): ${text.slice(0, 200)}`);
-                }
+    // Generate an ObjectId hex string client-side
+    const fileId = Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 
-                if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
-                resolve(data.url);
-            } catch (e: any) { reject(e); }
-        };
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(file);
-    });
+    for (let i = 0; i < totalChunks; i++) {
+        const start = i * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const chunkBlob = file.slice(start, end);
+
+        // Convert just this chunk to base64
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(chunkBlob);
+        });
+
+        // Strip the "data:...;base64," prefix to just get raw base64 string
+        const base64Data = dataUrl.split(',')[1];
+        const isFinal = (i === totalChunks - 1);
+
+        const res = await fetch('/api/admin/upload/chunk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fileId,
+                index: i,
+                base64Data,
+                filename: file.name,
+                mime: file.type || 'application/octet-stream',
+                totalSize: file.size,
+                chunkSize: CHUNK_SIZE,
+                isFinal
+            }),
+        });
+
+        const text = await res.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch {
+            throw new Error(`Server error (${res.status}): ${text.slice(0, 150)}`);
+        }
+
+        if (!res.ok) throw new Error(data.error || `Chunk ${i} upload failed`);
+
+        if (isFinal && data.url) {
+            return data.url;
+        }
+    }
+
+    throw new Error('Upload reached end without final response');
 }
 
 export default function AdminSettingsPage() {
