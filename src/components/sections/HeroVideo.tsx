@@ -124,7 +124,14 @@ export default function HeroVideo({
       {/* ── Ambient Background Video ── */}
       <div className="absolute inset-0 z-0">
         <video
-          ref={bgVideoRef}
+          ref={(el) => {
+            bgVideoRef.current = el;
+            if (el) {
+              el.defaultMuted = true;
+              el.muted = true;
+              el.playsInline = true;
+            }
+          }}
           src={videoList[0]}
           autoPlay
           muted
@@ -153,11 +160,18 @@ export default function HeroVideo({
             {videoList.map((video, idx) => (
               <video
                 key={video}
-                ref={(el) => { videoRefs.current[idx] = el; }}
+                ref={(el) => {
+                  videoRefs.current[idx] = el;
+                  if (el) {
+                    el.defaultMuted = true;
+                    el.muted = true;
+                    el.playsInline = true;
+                  }
+                }}
                 src={video}
-                autoPlay={idx === 0}    /* HTML attribute — browser honours before JS runs */
-                muted
-                playsInline
+                autoPlay={idx === 0}
+                muted={true}
+                playsInline={true}
                 loop={videoList.length === 1}
                 preload={idx === 0 ? 'auto' : 'metadata'}
                 disablePictureInPicture
