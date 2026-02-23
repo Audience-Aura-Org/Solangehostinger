@@ -89,7 +89,7 @@ export default function HeroVideo({
           muted
           loop
           playsInline
-          className="w-full h-full object-cover opacity-30 mix-blend-luminosity scale-105"
+          className="w-full h-full object-cover opacity-60 md:opacity-30 mix-blend-luminosity scale-105"
           poster={fallbackImage}
         />
         {/* Darkening overlay with blur to ensure text readability */}

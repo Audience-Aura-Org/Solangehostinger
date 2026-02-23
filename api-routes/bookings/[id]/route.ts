@@ -12,7 +12,8 @@ export async function PUT(
 
     // Check admin auth
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
+    const ADMIN_API_SECRET = process.env.ADMIN_SECRET || process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
+    if (!authHeader || authHeader !== `Bearer ${ADMIN_API_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
