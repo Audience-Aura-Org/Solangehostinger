@@ -48,7 +48,6 @@ export async function POST(request: Request) {
         const safeName = `${Date.now()}-${filename.replace(/[^a-zA-Z0-9.\-_]/g, '-')}`;
         const uploadStream = bucket.openUploadStream(safeName, {
             metadata: { mime },
-            contentType: mime,
         });
 
         uploadStream.end(buffer);
