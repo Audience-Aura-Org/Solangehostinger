@@ -5,9 +5,13 @@ import Stripe from 'stripe';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-01-27-preview' as any,
-});
+function getStripeClient() {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+        throw new Error('Missing STRIPE_SECRET_KEY environment variable');
+    }
+    return new Stripe(key, { apiVersion: '2025-01-27-preview' as any });
+}
 
 async function verifyAdmin() {
     const cookieStore = await cookies();
@@ -43,7 +47,8 @@ export async function POST(
         }
 
         // Retrieve the session to find the payment intent
-        const session = await stripe.checkout.sessions.retrieve(booking.stripeSessionId);
+        const stripe = getStripeClient();
+        const session = await stripe.checkout.sessions.retrieve(booking.stripeSessionId as string);
         if (!session.payment_intent) {
             return NextResponse.json({ error: 'No payment intent found' }, { status: 400 });
         }
