@@ -40,18 +40,28 @@ export default function HeroVideo({
   };
 
   // ─── useLayoutEffect: fires synchronously before browser paint ─────
-  // This is the earliest possible moment to trigger play, giving the
-  // browser the play instruction before it has rendered the play button.
   useLayoutEffect(() => {
     playVideo(bgVideoRef.current);
     playVideo(videoRefs.current[0]);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ─── Also attempt via useEffect (runs after paint) ─────────────────
+  // ─── Aggressive Polling on Mount ───────────────────────────────────
+  // Mobile browsers (especially Safari) will sometimes falsely block
+  // `.play()` if it is called EXACTLY during the heaviest rendering frames of hydration.
+  // Polling it a few times over the first 1-2 seconds gracefully overcomes this race condition.
   useEffect(() => {
-    playVideo(bgVideoRef.current);
-    playVideo(videoRefs.current[currentVideoIndex]);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      playVideo(bgVideoRef.current);
+      playVideo(videoRefs.current[currentVideoIndex]);
+
+      // Stop trying aggressively after 2 seconds
+      if (attempts >= 10) clearInterval(interval);
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [currentVideoIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Fallback: play on FIRST interaction of any kind ──────────────
   // Covers browsers that require user-activation for autoplay.
