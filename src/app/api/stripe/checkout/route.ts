@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-02-24.acacia' as any,
-});
+function getStripeClient() {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+        throw new Error('Missing STRIPE_SECRET_KEY environment variable');
+    }
+    return new Stripe(key, { apiVersion: '2025-02-24.acacia' as any });
+}
 
 export async function POST(request: Request) {
     try {
         const { bookingId, price, clientEmail, serviceName } = await request.json();
 
+        const stripe = getStripeClient();
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             customer_email: clientEmail,
