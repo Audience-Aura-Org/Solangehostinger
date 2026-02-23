@@ -8,8 +8,9 @@ async function verifyAdmin() {
     const cookieStore = await cookies();
     const token = cookieStore.get('admin_token')?.value;
     if (!token) return false;
+    const JWT_SECRET = process.env.JWT_SECRET || process.env.ADMIN_SECRET || process.env.NEXTAUTH_SECRET || 'fallback_secret';
     try {
-        jwt.verify(token, process.env.ADMIN_SECRET || 'fallback_secret');
+        jwt.verify(token, JWT_SECRET);
         return true;
     } catch {
         return false;
