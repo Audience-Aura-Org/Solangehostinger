@@ -302,10 +302,10 @@ export default function BookingPage() {
         </div>
 
         {/* ─── Main Grid ─── */}
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start w-full max-w-full overflow-hidden">
 
           {/* Sidebar */}
-          <aside className="w-full lg:w-64 shrink-0 lg:sticky lg:top-32">
+          <aside className="w-full lg:w-64 shrink-0 lg:sticky lg:top-32 max-w-full">
 
             {/* Brand mark */}
             <div className="border border-[#141414] p-6 mb-6 flex flex-col items-center text-center">
