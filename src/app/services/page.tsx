@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import ConversationTrigger from '@/components/ui/ConversationTrigger';
 
 const SERVICES = [
   {
@@ -317,6 +318,12 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      <ConversationTrigger
+        position="bottom-right"
+        style="bubble"
+        message="Find your perfect style. Book a consultation with our specialists."
+        buttonText="Reserve Now"
+      />
     </main>
   );
 }

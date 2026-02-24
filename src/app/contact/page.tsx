@@ -2,6 +2,7 @@
 
 import Button from '@/components/ui/Button';
 import { useSiteSettings } from '@/lib/hooks/useSiteSettings';
+import ConversationTrigger from '@/components/ui/ConversationTrigger';
 
 export default function ContactPage() {
   const { email, phone, address } = useSiteSettings();
@@ -148,6 +149,12 @@ export default function ContactPage() {
         </div>
       </section>
 
+      <ConversationTrigger
+        position="bottom-left"
+        style="bubble"
+        message="Have questions? Let's chat about your perfect braid style."
+        buttonText="Schedule Now"
+      />
     </main>
   );
 }

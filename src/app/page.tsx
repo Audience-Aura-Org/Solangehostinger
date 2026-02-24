@@ -6,6 +6,7 @@ import ExperienceSection from '@/components/sections/ExperienceSection';
 import TestimonialsSection from '@/components/sections/TestimonialsSection';
 import GallerySection from '@/components/sections/GallerySection';
 import CTASection from '@/components/sections/CTASection';
+import ConversationTrigger from '@/components/ui/ConversationTrigger';
 
 const FALLBACK_VIDEOS = [
   'https://assets.mixkit.co/videos/preview/mixkit-woman-with-beautiful-braided-hair-41712-large.mp4',
@@ -55,6 +56,12 @@ export default async function Home() {
       <TestimonialsSection />
       <GallerySection />
       <CTASection />
+      <ConversationTrigger
+        position="bottom-right"
+        style="bubble"
+        message="Ready for a transformation? Let's schedule your appointment."
+        buttonText="Book Your Journey"
+      />
     </div>
   );
 }

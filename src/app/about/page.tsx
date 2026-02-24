@@ -1,5 +1,6 @@
 import { connectToDatabase } from '@/lib/mongodb';
 import AdminSettings from '@/models/AdminSettings';
+import ConversationTrigger from '@/components/ui/ConversationTrigger';
 
 const FALLBACK_VIDEO = 'https://assets.mixkit.co/videos/preview/mixkit-hairdresser-combing-hair-of-a-woman-in-a-salon-4048-large.mp4';
 const FALLBACK_POSTER = 'https://images.unsplash.com/photo-1595476108018-0e817c1bf194?auto=format&fit=crop&q=80&w=1000';
@@ -140,6 +141,12 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      <ConversationTrigger
+        position="bottom-right"
+        style="bubble"
+        message="Curious about our services? Schedule your appointment now."
+        buttonText="Book Your Session"
+      />
     </main>
   );
 }
