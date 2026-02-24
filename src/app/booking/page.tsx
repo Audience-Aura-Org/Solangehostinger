@@ -373,7 +373,7 @@ export default function BookingPage() {
           </aside>
 
           {/* Main Wizard Content */}
-          <div className="flex-1 min-h-[480px]">
+          <div className="flex-1 w-full min-h-[480px]">
 
             {/* ── Step 1: Choose Style ── */}
             {step === 'category' && (
