@@ -137,66 +137,91 @@ export default function AccountPage() {
 
                 {/* Content */}
                 {activeTab === 'orders' && (
-                    <div className="space-y-4">
-                        {bookings.length === 0 ? (
-                            <div className="border border-surface bg-dark p-12 text-center">
-                                <p className="text-[9px] uppercase tracking-widest text-muted">No bookings found in your ledger.</p>
-                            </div>
-                        ) : (
-                            bookings.map(booking => (
-                                <div key={booking._id} className="border border-surface bg-dark p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-accent transition-colors">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className="text-[8px] font-mono text-muted tracking-tighter">{booking.confirmationNumber}</span>
-                                            <span className={`text-[7px] uppercase tracking-[0.15em] px-2 py-0.5 border ${booking.status === 'confirmed' ? 'border-accent text-accent' : 'border-surface text-muted'}`}>
-                                                {booking.status}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-serif text-primary text-lg">{booking.service}</h3>
-                                        {booking.addons && booking.addons.length > 0 && (
-                                            <p className="text-[9px] text-accent/60 tracking-widest uppercase mt-0.5">
-                                                Extras: {booking.addons.map(a => a.name).join(', ')}
-                                            </p>
-                                        )}
-                                        <p className="text-[10px] text-muted uppercase tracking-widest mt-1">
-                                            {new Date(booking.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })} at {booking.time}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
-                                        <span className="text-accent font-serif text-xl">${booking.price}</span>
-                                        <div className="flex flex-col gap-2 items-end">
-                                            <button
-                                                onClick={() => setDisputeModal({ open: true, bookingId: booking._id })}
-                                                className="text-[9px] uppercase tracking-[0.2em] text-muted hover:text-accent transition-colors border-b border-transparent hover:border-accent pb-0.5"
-                                            >
-                                                Raise Issue
-                                            </button>
-                                            {booking.status !== 'cancelled' && (
-                                                <button
-                                                    onClick={async () => {
-                                                        if (!confirm('Are you sure you want to request cancellation for this session? Our team will review your request.')) return;
-                                                        try {
-                                                            const res = await fetch('/api/bookings/cancel-request', {
-                                                                method: 'POST',
-                                                                headers: { 'Content-Type': 'application/json' },
-                                                                body: JSON.stringify({ bookingId: booking._id }),
-                                                            });
-                                                            if (res.ok) alert('Cancellation request submitted to the Maison team.');
-                                                            else alert('Unable to process request at this time.');
-                                                        } catch {
-                                                            alert('An error occurred.');
-                                                        }
-                                                    }}
-                                                    className="text-[9px] uppercase tracking-[0.2em] text-muted hover:text-red-500/80 transition-colors border-b border-transparent hover:border-red-500/30 pb-0.5"
-                                                >
-                                                    Request Cancellation
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
+                    <div className="relative border border-surface bg-dark rounded-sm overflow-hidden">
+                        <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-surface max-h-[calc(100vh-200px)]">
+                            {bookings.length === 0 ? (
+                                <div className="p-20 text-center text-[9px] uppercase tracking-[0.3em] text-muted">
+                                    No bookings found in your ledger.
                                 </div>
-                            ))
-                        )}
+                            ) : (
+                                <table className="w-full min-w-[900px] table-fixed text-[9px] sm:text-[10px]">
+                                    <thead>
+                                        <tr className="border-b border-surface bg-dark-surface">
+                                            <th className="w-[120px] px-4 sm:px-6 py-4 sm:py-5 text-left text-[8px] uppercase tracking-[0.3em] text-muted font-bold">Reference</th>
+                                            <th className="w-[140px] px-4 sm:px-6 py-4 sm:py-5 text-left text-[8px] uppercase tracking-[0.3em] text-muted font-bold">Service</th>
+                                            <th className="w-[140px] px-4 sm:px-6 py-4 sm:py-5 text-left text-[8px] uppercase tracking-[0.3em] text-muted font-bold">Date & Time</th>
+                                            <th className="w-[100px] px-4 sm:px-6 py-4 sm:py-5 text-left text-[8px] uppercase tracking-[0.3em] text-muted font-bold">Status</th>
+                                            <th className="w-[80px] px-4 sm:px-6 py-4 sm:py-5 text-left text-[8px] uppercase tracking-[0.3em] text-muted font-bold">Price</th>
+                                            <th className="w-[150px] px-4 sm:px-6 py-4 sm:py-5 text-right text-[8px] uppercase tracking-[0.3em] text-muted font-bold">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bookings.map((booking, i) => (
+                                            <tr
+                                                key={booking._id}
+                                                className={`group hover:bg-dark-surface transition-colors ${i !== bookings.length - 1 ? 'border-b border-surface' : ''}`}
+                                            >
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5 text-[8px] font-mono text-muted whitespace-nowrap">
+                                                    #{booking.confirmationNumber?.slice(-8).toUpperCase() ?? '—'}
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5">
+                                                    <p className="text-[9px] sm:text-[10px] font-semibold text-primary truncate">{booking.service}</p>
+                                                    {booking.addons && booking.addons.length > 0 && (
+                                                        <p className="text-[8px] text-accent/60 truncate mt-1">Extras: {booking.addons.map(a => a.name).join(', ')}</p>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5 text-[8px] sm:text-[9px] text-muted/80 whitespace-nowrap">
+                                                    {new Date(booking.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} <span className="text-muted/40 mx-1">/</span> {booking.time}
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5">
+                                                    <span className={`text-[8px] uppercase tracking-[0.2em] font-bold ${
+                                                        booking.status === 'confirmed' ? 'text-accent' :
+                                                        booking.status === 'cancelled' ? 'text-red-500/70' :
+                                                        'text-muted'
+                                                    }`}>
+                                                        {booking.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] text-accent font-serif font-bold">
+                                                    ${booking.price}
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5 text-right">
+                                                    <div className="flex items-center justify-end gap-2 sm:gap-3">
+                                                        <button
+                                                            onClick={() => setDisputeModal({ open: true, bookingId: booking._id })}
+                                                            className="text-[8px] uppercase tracking-[0.15em] text-muted hover:text-accent transition-colors whitespace-nowrap"
+                                                        >
+                                                            Raise
+                                                        </button>
+                                                        {booking.status !== 'cancelled' && (
+                                                            <button
+                                                                onClick={async () => {
+                                                                    if (!confirm('Request cancellation?')) return;
+                                                                    try {
+                                                                        const res = await fetch('/api/bookings/cancel-request', {
+                                                                            method: 'POST',
+                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                            body: JSON.stringify({ bookingId: booking._id }),
+                                                                        });
+                                                                        if (res.ok) alert('Cancellation request submitted.');
+                                                                        else alert('Unable to process request.');
+                                                                    } catch {
+                                                                        alert('An error occurred.');
+                                                                    }
+                                                                }}
+                                                                className="text-[8px] uppercase tracking-[0.15em] text-muted/60 hover:text-red-500/80 transition-colors whitespace-nowrap"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
                     </div>
                 )}
 
