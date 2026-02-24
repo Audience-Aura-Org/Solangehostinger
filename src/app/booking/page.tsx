@@ -377,7 +377,7 @@ export default function BookingPage() {
 
             {/* ── Step 1: Choose Style ── */}
             {step === 'category' && (
-              <div>
+              <div className="w-full">
                 <p className="text-[9px] uppercase tracking-[0.35em] text-[#8A8070] mb-6">Choose your base style</p>
                 <div className="space-y-3">
                   {categories.map(cat => (
@@ -405,7 +405,7 @@ export default function BookingPage() {
 
             {/* ── Step 2: Choose Size ── */}
             {step === 'size' && selectedCategory && (
-              <div>
+              <div className="w-full">
                 <div className="flex items-center justify-between mb-6">
                   <button onClick={() => { setStep('category'); setSelectedCategory(null); }}
                     className="text-[9px] uppercase tracking-widest text-[#8A8070] hover:text-[#C5A059] transition-colors">
@@ -436,7 +436,7 @@ export default function BookingPage() {
 
             {/* ── Step 3: Addons ── */}
             {step === 'addons' && selectedCategory && (
-              <div>
+              <div className="w-full">
                 <div className="flex items-center justify-between mb-6">
                   <button onClick={() => { setStep('size'); setSelectedAddons([]); }}
                     className="text-[9px] uppercase tracking-widest text-[#8A8070] hover:text-[#C5A059] transition-colors">
@@ -493,7 +493,7 @@ export default function BookingPage() {
 
             {/* ── Step 3: Date & Time ── */}
             {step === 'datetime' && (
-              <div>
+              <div className="w-full">
                 <div className="flex items-center justify-between mb-6">
                   <button onClick={() => { setStep('addons'); setSelectedDate(null); setSelectedTime(''); }}
                     className="text-[9px] uppercase tracking-widest text-[#8A8070] hover:text-[#C5A059] transition-colors">
@@ -573,7 +573,7 @@ export default function BookingPage() {
 
             {/* ── Step 4: Client Details ── */}
             {step === 'info' && (
-              <div>
+              <div className="w-full">
                 <div className="flex items-center justify-between mb-6">
                   <button onClick={() => setStep('datetime')}
                     className="text-[9px] uppercase tracking-widest text-[#8A8070] hover:text-[#C5A059] transition-colors">
