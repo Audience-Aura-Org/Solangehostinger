@@ -8,7 +8,7 @@ import { useSiteSettings } from '@/lib/hooks/useSiteSettings';
 
 export default function Navigation() {
   const pathname = usePathname();
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<{ role: string; email: string } | null>(null);
@@ -17,7 +17,7 @@ export default function Navigation() {
 
   useEffect(() => {
     // Get theme from DOM attribute set by ThemeProvider
-    const themeAttr = document.documentElement.getAttribute('data-theme') || 'dark';
+    const themeAttr = document.documentElement.getAttribute('data-theme') || 'light';
     setTheme(themeAttr as 'light' | 'dark');
   }, []);
 
@@ -107,10 +107,11 @@ export default function Navigation() {
                 {/* Theme Toggle Button */}
                 <button
                   onClick={toggleTheme}
-                  className={`${theme === 'light' ? 'text-black' : 'text-gray-400'} hover:text-accent transition-colors duration-300 p-2 rounded-lg hover:bg-white/5`}
+                  className={`${theme === 'light' ? 'text-black' : 'text-gray-400'} hover:text-accent transition-colors duration-300 p-2 rounded-lg hover:bg-white/5 flex items-center gap-2`}
                   aria-label="Toggle theme"
                   title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                 >
+                  <span className="text-sm">{theme === 'dark' ? '☀️' : '🌙'}</span>
                   {theme === 'dark' ? (
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="5" />
