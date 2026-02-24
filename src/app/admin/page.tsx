@@ -91,49 +91,59 @@ export default function AdminOverviewPage() {
           </Link>
         </div>
 
-        <div className="bg-[#060606] border border-[#141414]">
-          {loading ? (
-            <div className="p-12 text-center text-[10px] uppercase tracking-widest text-[#404040] animate-pulse">
-              Loading records...
-            </div>
-          ) : recent.length === 0 ? (
-            <div className="p-12 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-[#404040] mb-4">No records yet</p>
-              <Link href="/api/auth/seed" className="text-[10px] uppercase tracking-widest text-[#C5A059] hover:underline" target="_blank">
-                Initialize database →
-              </Link>
-            </div>
-          ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#141414]">
-                  {['Ref', 'Client', 'Service', 'Date', 'Status', 'Amount'].map(h => (
-                    <th key={h} className="px-6 py-4 text-left text-[9px] uppercase tracking-[0.3em] text-[#404040] font-normal whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {recent.map((b, i) => (
-                  <tr key={b._id} className={`group hover:bg-[#0A0A0A] transition-colors ${i !== recent.length - 1 ? 'border-b border-[#0F0F0F]' : ''}`}>
-                    <td className="px-6 py-4 text-[9px] font-mono text-[#404040]">
-                      {b.confirmationNumber?.slice(-8) ?? '—'}
-                    </td>
-                    <td className="px-6 py-4 text-xs text-[#FDFBF7]">{b.clientName}</td>
-                    <td className="px-6 py-4 text-[10px] text-[#606060] uppercase tracking-widest">{b.service}</td>
-                    <td className="px-6 py-4 text-[10px] text-[#404040] whitespace-nowrap">
-                      {new Date(b.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · {b.time}
-                    </td>
-                    <td className={`px-6 py-4 text-[9px] uppercase tracking-[0.2em] font-medium ${statusStyle(b.status)}`}>
-                      {b.status}
-                    </td>
-                    <td className="px-6 py-4 text-xs text-[#C5A059] tabular-nums">${b.price}</td>
+        <div className="relative border border-[#141414] bg-[#060606] rounded-sm overflow-hidden">
+          <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-[#1A1A1A] max-h-[calc(100vh-200px)]">
+            {loading ? (
+              <div className="p-12 text-center text-[10px] uppercase tracking-widest text-[#404040] animate-pulse">
+                Loading records...
+              </div>
+            ) : recent.length === 0 ? (
+              <div className="p-12 text-center">
+                <p className="text-[10px] uppercase tracking-widest text-[#404040] mb-4">No records yet</p>
+                <Link href="/api/auth/seed" className="text-[10px] uppercase tracking-widest text-[#C5A059] hover:underline" target="_blank">
+                  Initialize database →
+                </Link>
+              </div>
+            ) : (
+              <table className="w-full min-w-[1000px] table-fixed text-[10px] sm:text-sm">
+                <thead>
+                  <tr className="border-b border-[#141414] bg-[#0A0A0A]">
+                    <th className="w-[120px] px-6 py-5 text-left text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">Reference</th>
+                    <th className="w-[180px] px-6 py-5 text-left text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">Client</th>
+                    <th className="w-[160px] px-6 py-5 text-left text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">Service</th>
+                    <th className="w-[140px] px-6 py-5 text-left text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">Schedule</th>
+                    <th className="w-[110px] px-6 py-5 text-left text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">Status</th>
+                    <th className="w-[100px] px-6 py-5 text-left text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">Amount</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody className="font-quicksand">
+                  {recent.map((b, i) => (
+                    <tr
+                      key={b._id}
+                      className={`group hover:bg-[#0A0A0A] transition-colors ${i !== recent.length - 1 ? 'border-b border-[#0E0E0E]' : ''}`}
+                    >
+                      <td className="px-6 py-6 text-[10px] font-mono text-gray-500 whitespace-nowrap">
+                        #{b.confirmationNumber?.slice(-8).toUpperCase() ?? '—'}
+                      </td>
+                      <td className="px-6 py-6">
+                        <p className="text-xs font-semibold text-[#FDFBF7] truncate">{b.clientName}</p>
+                      </td>
+                      <td className="px-6 py-6">
+                        <p className="text-[10px] uppercase tracking-widest text-[#FDFBF7] font-bold truncate">{b.service}</p>
+                      </td>
+                      <td className="px-6 py-6 text-[10px] text-gray-400 whitespace-nowrap">
+                        {new Date(b.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} <span className="text-[#C5A059]/40 mx-1">/</span> {b.time}
+                      </td>
+                      <td className={`px-6 py-6 text-[9px] uppercase tracking-[0.2em] font-bold ${statusStyle(b.status)}`}>
+                        {b.status}
+                      </td>
+                      <td className="px-6 py-6 text-[11px] text-[#C5A059] font-serif tabular-nums font-bold">${b.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
 
