@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="bg-dark text-light antialiased selection:bg-primary selection:text-dark">
+      <body className="bg-[var(--dark)] text-[var(--light)] antialiased selection:bg-primary selection:text-dark">
         <ClientWrapper>
           <LayoutShell>{children}</LayoutShell>
         </ClientWrapper>
