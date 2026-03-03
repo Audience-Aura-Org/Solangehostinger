@@ -83,6 +83,21 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [formData, setFormData] = useState({ firstName: '', lastName: '', phone: '', email: '', hairColor: '' });
+
+  // load saved client info from previous booking
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('solangeClientInfo');
+      if (stored) setFormData(JSON.parse(stored));
+    } catch {}
+  }, []);
+
+  // persist changes so returning users don't have to retype
+  useEffect(() => {
+    try {
+      localStorage.setItem('solangeClientInfo', JSON.stringify(formData));
+    } catch {}
+  }, [formData]);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [confirmationNumber, setConfirmationNumber] = useState('');
@@ -717,7 +732,7 @@ export default function BookingPage() {
                     Download Ticket
                   </button>
                   <button
-                    onClick={() => { setStep('category'); setSelectedCategory(null); setSelectedSize(null); setSelectedDate(null); setSelectedTime(''); setFormData({ firstName: '', lastName: '', phone: '', email: '', hairColor: '' }); setConfirmationNumber(''); }}
+                    onClick={() => { setStep('category'); setSelectedCategory(null); setSelectedSize(null); setSelectedDate(null); setSelectedTime(''); /* keep formData persisted */ setConfirmationNumber(''); }}
                     className="border border-[#222] text-[#C8C0B0] hover:border-[#C5A059]/40 hover:text-[#FDFBF7] py-3 px-6 text-[9px] uppercase tracking-widest transition-all">
                     Book Another
                   </button>
