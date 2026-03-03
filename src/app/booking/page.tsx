@@ -702,9 +702,9 @@ export default function BookingPage() {
                 )}
 
                 {confirmationNumber && (
-                  <div className="inline-block border border-[#C5A059]/30 bg-[#C5A059]/5 px-5 py-2 my-4">
+                  <div className="inline-block border border-[#C5A059]/30 bg-[#C5A059]/10 px-5 py-2 my-4">
                     <p className="text-[7px] uppercase tracking-[0.3em] text-[#8A8070] mb-1">Confirmation No.</p>
-                    <p className="text-sm font-mono text-[#C5A059] tracking-wider">{confirmationNumber}</p>
+                    <p className="text-sm font-mono text-[#FDFBF7] tracking-wider">{confirmationNumber}</p>
                   </div>
                 )}
                 <p className="text-xs text-[#8A8070] mb-10">A formal confirmation will be dispatched to {formData.email}.</p>
