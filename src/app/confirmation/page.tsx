@@ -120,9 +120,14 @@ function ConfirmationContent() {
                       </ul>
                     </div>
                   )}
-                  <div className="pt-4">
-                    <p className="text-gray-500 text-sm">Confirmation Number</p>
-                    <p className="text-lg font-semibold text-accent">{booking.confirmationNumber}</p>
+                  <div className="pt-8 mt-4 border-t border-white/10">
+                    <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em] mb-4 text-center">Your Exclusive Confirmation Reference</p>
+                    <div className="bg-dark/40 border border-[#C5A059]/30 rounded-xl p-6 text-center backdrop-blur-md shadow-glass-glow">
+                      <p className="text-3xl sm:text-4xl font-mono font-bold text-[#C5A059] tracking-wider select-all">
+                        {booking.confirmationNumber}
+                      </p>
+                      <p className="text-[9px] text-gray-500 mt-3 uppercase tracking-widest font-semibold">Please present this at the Maison for check-in</p>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -143,9 +148,13 @@ function ConfirmationContent() {
                     <p className="text-gray-500 text-sm">Stylist</p>
                     <p className="text-lg font-semibold text-dark">Solange Adeyemi</p>
                   </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">Confirmation Number</p>
-                    <p className="text-lg font-semibold text-accent">SLNG-{Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                  <div className="pt-8 mt-4 border-t border-white/10">
+                    <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em] mb-4 text-center">Confirmation Number</p>
+                    <div className="bg-dark/20 border border-white/10 rounded-xl p-6 text-center">
+                      <p className="text-2xl font-mono font-bold text-accent tracking-widest">
+                        SLNG-{Math.random().toString(36).substr(2, 9).toUpperCase()}
+                      </p>
+                    </div>
                   </div>
                 </>
               )}
@@ -156,7 +165,7 @@ function ConfirmationContent() {
             </div>
 
             <div className="space-y-4">
-                {booking && <button onClick={downloadTicket} className="w-full bg-primary text-black py-3 text-[9px] uppercase tracking-[0.3em] font-semibold hover:bg-accent transition-colors">Download Ticket (PDF)</button>}
+              {booking && <button onClick={downloadTicket} className="w-full bg-primary text-black py-3 text-[9px] uppercase tracking-[0.3em] font-semibold hover:bg-accent transition-colors">Download Ticket (PDF)</button>}
               <Link href="/" className="block"><Button className="w-full" size="lg">← Return Home</Button></Link>
               <Link href="/admin" className="block"><Button variant="outline" className="w-full" size="lg">📊 View Booking Status</Button></Link>
             </div>

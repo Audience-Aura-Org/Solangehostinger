@@ -39,15 +39,21 @@ export default function AdminBookingsPage() {
     const [editModal, setEditModal] = useState<{ open: boolean; booking: Booking | null }>({ open: false, booking: null });
     const [detailModal, setDetailModal] = useState<{ open: boolean; booking: Booking | null }>({ open: false, booking: null });
 
-    const fetchBookings = async () => {
+    const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
+
+    const fetchBookings = async (page = 1) => {
         setLoading(true);
-        const res = await fetch(`/api/admin/bookings?status=${filter}`);
+        const params = new URLSearchParams({ status: filter, page: String(page) });
+        if (search.trim()) params.set('search', search.trim());
+        const res = await fetch(`/api/admin/bookings?${params.toString()}`);
         const data = await res.json();
         setBookings(data.bookings || []);
+        if (data.pagination) setPagination(data.pagination);
         setLoading(false);
     };
 
-    useEffect(() => { fetchBookings(); }, [filter]);
+    // refetch whenever filter or search changes (reset to first page)
+    useEffect(() => { fetchBookings(1); }, [filter, search]);
 
     const updateStatus = async (id: string, status: string) => {
         setUpdating(id);
@@ -56,7 +62,7 @@ export default function AdminBookingsPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status }),
         });
-        await fetchBookings();
+        await fetchBookings(pagination.page);
         setUpdating(null);
     };
 
@@ -66,11 +72,7 @@ export default function AdminBookingsPage() {
         setBookings(prev => prev.filter(b => b._id !== id));
     };
 
-    const filtered = bookings.filter(b =>
-        b.clientName?.toLowerCase().includes(search.toLowerCase()) ||
-        b.clientEmail?.toLowerCase().includes(search.toLowerCase()) ||
-        b.confirmationNumber?.toLowerCase().includes(search.toLowerCase())
-    );
+    // note: filtering/search is now handled server-side via query param
 
     return (
         <div className="max-w-6xl mx-auto space-y-10 font-poppins px-6 py-10">
@@ -82,7 +84,7 @@ export default function AdminBookingsPage() {
                     <h1 className="text-4xl md:text-5xl font-serif text-[#FDFBF7] tracking-tight leading-none">Reservations</h1>
                 </div>
                 <div className="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-medium font-quicksand">
-                    {filtered.length} record{filtered.length !== 1 ? 's' : ''} found
+                    {pagination.total} record{pagination.total !== 1 ? 's' : ''} found
                 </div>
             </div>
 
@@ -96,7 +98,7 @@ export default function AdminBookingsPage() {
                     className="bg-transparent border-b border-[#222] px-0 py-2 text-xs text-[#FDFBF7] placeholder-gray-600 focus:outline-none focus:border-[#C5A059] w-full sm:w-72 transition-colors"
                 />
                 <div className="flex gap-1">
-                    {['all', 'confirmed', 'completed', 'cancelled'].map(s => (
+                    {['all', 'upcoming', 'confirmed', 'completed', 'cancelled'].map(s => (
                         <button
                             key={s}
                             onClick={() => setFilter(s)}
@@ -118,7 +120,7 @@ export default function AdminBookingsPage() {
                         <div className="p-20 text-center text-[9px] uppercase tracking-[0.3em] text-gray-500 animate-pulse font-poppins">
                             Synchronizing archives...
                         </div>
-                    ) : filtered.length === 0 ? (
+                    ) : bookings.length === 0 ? (
                         <div className="p-20 text-center text-[9px] uppercase tracking-[0.3em] text-gray-500 font-poppins">
                             No records found in this sequence.
                         </div>
@@ -136,10 +138,10 @@ export default function AdminBookingsPage() {
                                 </tr>
                             </thead>
                             <tbody className="font-quicksand">
-                                {filtered.map((b, i) => (
+                                {bookings.map((b, i) => (
                                     <tr
                                         key={b._id}
-                                        className={`group hover:bg-[#0A0A0A] transition-colors ${i !== filtered.length - 1 ? 'border-b border-[#0E0E0E]' : ''}`}
+                                        className={`group hover:bg-[#0A0A0A] transition-colors ${i !== bookings.length - 1 ? 'border-b border-[#0E0E0E]' : ''}`}
                                     >
                                         <td className="px-6 py-6 text-[10px] font-mono text-gray-500 whitespace-nowrap">
                                             #{b.confirmationNumber?.slice(-8).toUpperCase() ?? '—'}
@@ -207,6 +209,34 @@ export default function AdminBookingsPage() {
                         </table>
                     )}
                 </div>
+
+                {/* Pagination Controls */}
+                {!loading && pagination.pages > 1 && (
+                    <div className="flex items-center justify-between px-6 py-6 border-t border-[#141414] bg-[#0A0A0A] font-quicksand">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">
+                            Showing <span className="text-white">{(pagination.page - 1) * 10 + 1}-{Math.min(pagination.page * 10, pagination.total)}</span> of <span className="text-white">{pagination.total}</span>
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                disabled={pagination.page === 1}
+                                onClick={() => fetchBookings(pagination.page - 1)}
+                                className="px-4 py-2 text-[9px] uppercase tracking-[0.2em] border border-[#222] text-gray-400 disabled:opacity-30 hover:bg-white/5 transition-colors"
+                            >
+                                Previous
+                            </button>
+                            <div className="flex items-center px-4 text-[10px] text-[#C5A059] font-bold">
+                                PAGE {pagination.page} OF {pagination.pages}
+                            </div>
+                            <button
+                                disabled={pagination.page === pagination.pages}
+                                onClick={() => fetchBookings(pagination.page + 1)}
+                                className="px-4 py-2 text-[9px] uppercase tracking-[0.2em] border border-[#222] text-gray-400 disabled:opacity-30 hover:bg-white/5 transition-colors"
+                            >
+                                Next Page
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* View Detail Modal */}
@@ -261,21 +291,21 @@ export default function AdminBookingsPage() {
                             </div>
                         </div>
 
-                                                <div className="mt-12 pt-12 border-t border-white/5 font-quicksand">
-                                                    <label className="text-[8px] uppercase tracking-widest text-gray-500 block mb-6">Additional Selections (Add Extras)</label>
-                                                    {detailModal.booking.addons && detailModal.booking.addons.length > 0 ? (
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                            {detailModal.booking.addons.map((addon: any, idx: number) => (
-                                                                <div key={idx} className="flex justify-between items-center p-4 bg-[#0A0A0A] border border-white/5 rounded-sm">
-                                                                    <span className="text-[10px] uppercase tracking-widest text-[#FDFBF7] font-bold">{addon.name}</span>
-                                                                    {addon.price > 0 && <span className="text-[10px] text-[#C5A059] font-serif">${addon.price}</span>}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-sm text-gray-400">No extras selected.</p>
-                                                    )}
-                                                </div>
+                        <div className="mt-12 pt-12 border-t border-white/5 font-quicksand">
+                            <label className="text-[8px] uppercase tracking-widest text-gray-500 block mb-6">Additional Selections (Add Extras)</label>
+                            {detailModal.booking.addons && detailModal.booking.addons.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {detailModal.booking.addons.map((addon: any, idx: number) => (
+                                        <div key={idx} className="flex justify-between items-center p-4 bg-[#0A0A0A] border border-white/5 rounded-sm">
+                                            <span className="text-[10px] uppercase tracking-widest text-[#FDFBF7] font-bold">{addon.name}</span>
+                                            {addon.price > 0 && <span className="text-[10px] text-[#C5A059] font-serif">${addon.price}</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-400">No extras selected.</p>
+                            )}
+                        </div>
 
                         {detailModal.booking.notes && (
                             <div className="mt-12 pt-12 border-t border-white/5 font-quicksand">
@@ -344,7 +374,7 @@ export default function AdminBookingsPage() {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(updates),
                             });
-                            await fetchBookings();
+                            await fetchBookings(pagination.page);
                             setEditModal({ open: false, booking: null });
                             setUpdating(null);
                         }} className="space-y-6 text-left font-quicksand">
@@ -436,7 +466,7 @@ export default function AdminBookingsPage() {
                                                 const res = await fetch(`/api/admin/bookings/${editModal.booking!._id}/refund`, { method: 'POST' });
                                                 if (res.ok) {
                                                     alert('Refund processed.');
-                                                    fetchBookings();
+                                                    fetchBookings(pagination.page);
                                                     setEditModal({ open: false, booking: null });
                                                 } else {
                                                     const d = await res.json();

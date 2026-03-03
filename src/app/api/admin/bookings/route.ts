@@ -26,14 +26,52 @@ export async function GET(request: Request) {
         await connectToDatabase();
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
-        const query: Record<string, string> = {};
-        if (status && status !== 'all') query.status = status;
+        const page = parseInt(searchParams.get('page') || '1');
+        const search = searchParams.get('search')?.trim() || '';
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-        const bookings = await Booking.find(query).sort({ date: -1 }).limit(100);
-        return NextResponse.json({ bookings });
+        const query: any = {};
+        if (status && status !== 'all') {
+            if (status === 'upcoming') {
+                // Bookings for today or future
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                query.date = { $gte: today };
+                query.status = 'confirmed';
+            } else {
+                query.status = status;
+            }
+        }
+
+        // server-side search across important fields
+        if (search) {
+            const re = new RegExp(search, 'i');
+            query.$or = [
+                { clientName: re },
+                { clientEmail: re },
+                { confirmationNumber: re }
+            ];
+        }
+
+        const total = await Booking.countDocuments(query);
+        const bookings = await Booking.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        return NextResponse.json({
+            bookings,
+            pagination: {
+                total,
+                page,
+                pages: Math.ceil(total / limit),
+                limit
+            }
+        });
     } catch (error: any) {
         console.error('[API] /api/admin/bookings GET error:', error);
-        return NextResponse.json({ 
+        return NextResponse.json({
             error: error.message,
             details: error.toString()
         }, { status: 500 });
