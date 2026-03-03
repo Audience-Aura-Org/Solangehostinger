@@ -134,8 +134,53 @@ export function getBookingConfirmationHtml(booking: any) {
         `;
 }
 
+// generate HTML for admins when a new reservation arrives
+export function getAdminBookingNotificationHtml(booking: any, adminLink: string) {
+    return `
+        <!doctype html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+                body { background: ${EMAIL_COLORS.white}; margin:0; padding:0; }
+                .container { max-width:600px; margin:auto; font-family: serif; color:${EMAIL_COLORS.text}; padding:20px; }
+                .card { background:${EMAIL_COLORS.white}; border:1px solid ${EMAIL_COLORS.border}; padding:20px; }
+                .muted { color:${EMAIL_COLORS.muted}; font-size:11px; text-transform:uppercase; letter-spacing:0.15em; }
+                .accent { color:${EMAIL_COLORS.accent}; }
+                .button { display:inline-block; background:${EMAIL_COLORS.accent}; color:#fff; text-decoration:none; padding:12px 30px; font-size:13px; text-transform:uppercase; letter-spacing:0.1em; font-weight:bold; border-radius:4px; }
+                @media (max-width:480px){ .container{padding:12px} .card{padding:12px} }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                ${renderHeader()}
+                <div class="card">
+                    <h2 style="margin-top:0" class="accent">New Reservation Received</h2>
+                    <p>A new booking has been made by <strong>${booking.clientName}</strong>.</p>
+                    <table width="100%" style="font-size:13px; border-collapse:collapse; margin-top:20px;">
+                        <tr><td class="muted" style="padding:6px 0;">Reference</td><td style="padding:6px 0; font-family:monospace; font-weight:bold; color:${EMAIL_COLORS.accent};">#${booking.confirmationNumber}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Service</td><td style="padding:6px 0; font-weight:bold;">${booking.service}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Schedule</td><td style="padding:6px 0;">${new Date(booking.date).toLocaleDateString()} at ${booking.time}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Investment</td><td style="padding:6px 0; font-weight: bold;">$${booking.price}</td></tr>
+                    </table>
+                    <div style="text-align:center; margin-top:30px;">
+                        <a href="${adminLink}" class="button">Open Booking Dashboard</a>
+                    </div>
+                </div>
+                ${renderFooter()}
+            </div>
+        </body>
+        </html>
+    `;
+}
+
 export function getBookingConfirmationText(booking: any) {
     return `Reservation Secured - SOLANGE\n\nClient: ${booking.clientName}\nService: ${booking.service}\nDate/Time: ${new Date(booking.date).toLocaleDateString()} at ${booking.time}\nConfirmation: ${booking.confirmationNumber}\n\nPlease arrive with hair pre-washed. $30 deposit required to secure session.`;
+}
+
+// plain‑text admin booking notification with a link
+export function getAdminBookingNotificationText(booking: any, adminLink: string) {
+    return `New booking received\n\nClient: ${booking.clientName} (${booking.clientEmail})\nService: ${booking.service}\nDate: ${new Date(booking.date).toLocaleDateString()} at ${booking.time}\nConfirmation: ${booking.confirmationNumber}\n\nManage in dashboard: ${adminLink}`;
 }
 
 export function getReminderHtml(booking: any, timeRemaining: string) {
