@@ -158,10 +158,15 @@ export function getAdminBookingNotificationHtml(booking: any, adminLink: string)
                     <h2 style="margin-top:0" class="accent">New Reservation Received</h2>
                     <p>A new booking has been made by <strong>${booking.clientName}</strong>.</p>
                     <table width="100%" style="font-size:13px; border-collapse:collapse; margin-top:20px;">
-                        <tr><td class="muted" style="padding:6px 0;">Reference</td><td style="padding:6px 0; font-family:monospace; font-weight:bold; color:${EMAIL_COLORS.accent};">#${booking.confirmationNumber}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Client</td><td style="padding:6px 0; font-weight:bold;">${booking.clientName}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Email</td><td style="padding:6px 0;">${booking.clientEmail}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Phone</td><td style="padding:6px 0;">${booking.clientPhone || 'N/A'}</td></tr>
                         <tr><td class="muted" style="padding:6px 0;">Service</td><td style="padding:6px 0; font-weight:bold;">${booking.service}</td></tr>
-                        <tr><td class="muted" style="padding:6px 0;">Schedule</td><td style="padding:6px 0;">${new Date(booking.date).toLocaleDateString()} at ${booking.time}</td></tr>
-                        <tr><td class="muted" style="padding:6px 0;">Investment</td><td style="padding:6px 0; font-weight: bold;">$${booking.price}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Extras</td><td style="padding:6px 0;">${booking.addons && booking.addons.length > 0 ? booking.addons.map((a:any)=>a.name).join(', ') : 'None'}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Date/Time</td><td style="padding:6px 0;">${new Date(booking.date).toLocaleDateString()} at ${booking.time}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Hair Color Request</td><td style="padding:6px 0; color:${EMAIL_COLORS.accent}; font-style:italic;">${booking.hairColor || 'None'}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Total Price</td><td style="padding:6px 0; font-weight: bold;">$${booking.price}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Reference</td><td style="padding:6px 0; font-family:monospace; font-weight:bold; color:${EMAIL_COLORS.accent};">#${booking.confirmationNumber}</td></tr>
                     </table>
                     <div style="text-align:center; margin-top:30px;">
                         <a href="${adminLink}" class="button">Open Booking Dashboard</a>
@@ -180,7 +185,10 @@ export function getBookingConfirmationText(booking: any) {
 
 // plain‑text admin booking notification with a link
 export function getAdminBookingNotificationText(booking: any, adminLink: string) {
-    return `New booking received\n\nClient: ${booking.clientName} (${booking.clientEmail})\nService: ${booking.service}\nDate: ${new Date(booking.date).toLocaleDateString()} at ${booking.time}\nConfirmation: ${booking.confirmationNumber}\n\nManage in dashboard: ${adminLink}`;
+    const extras = booking.addons && booking.addons.length > 0
+        ? booking.addons.map((a: any) => a.name).join(', ')
+        : 'None';
+    return `New booking received\n\nClient: ${booking.clientName}\nEmail: ${booking.clientEmail}\nPhone: ${booking.clientPhone || 'N/A'}\nService: ${booking.service}\nExtras: ${extras}\nDate/Time: ${new Date(booking.date).toLocaleDateString()} at ${booking.time}\nHair Color Request: ${booking.hairColor || 'None'}\nTotal Price: $${booking.price}\nReference: ${booking.confirmationNumber}\n\nManage in dashboard: ${adminLink}`;
 }
 
 export function getReminderHtml(booking: any, timeRemaining: string) {
