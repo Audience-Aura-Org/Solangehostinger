@@ -67,7 +67,7 @@ function renderFooter() {
         <table role="presentation" width="100%" style="max-width:600px;margin:auto;border-collapse:collapse;font-family: serif;color:${EMAIL_COLORS.text}">
             <tr><td style="padding:20px 0 6px 0;border-top:1px solid ${EMAIL_COLORS.border}"></td></tr>
             <tr>
-                <td style="text-align:center;font-size:11px;color:${EMAIL_COLORS.muted};padding:6px 0">6495 NEW HAMPSHIRE AVE, HYATTSVILLE, MD<br/>+1 301 454 9435 • Experience@solange.hair</td>
+                <td style="text-align:center;font-size:11px;color:${EMAIL_COLORS.muted};padding:6px 0">6495 NEW HAMPSHIRE AVE, HYATTSVILLE, MD<br/>+1 301 454 9435 • info@solangesignaturehair.hair</td>
             </tr>
         </table>
     `;
