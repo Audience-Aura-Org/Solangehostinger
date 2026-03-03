@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   keywords: "hair braiding, salon, appointments, braids, styling",
   icons: {
     icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon.png', type: 'image/png', sizes: '192x192' },
-      { url: '/favicon.png', type: 'image/png' },
     ],
-    apple: '/favicon.png',
+    apple: '/favicon.svg',
   },
 };
 
@@ -30,8 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/png" href="/favicon.png" sizes="any" />
-        <link rel="apple-touch-icon" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
