@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "Solange | Premium Hair Services",
   description: "Experience premium services at Solange. Book your appointment online.",
   keywords: "hair braiding, salon, appointments, braids, styling",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

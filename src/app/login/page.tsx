@@ -29,6 +29,11 @@ export default function LoginPage() {
                 throw new Error(data.error || 'Failed to login');
             }
 
+            // Notify other UI parts that auth changed (e.g. Navigation) then redirect
+            try {
+                window.dispatchEvent(new CustomEvent('authChanged', { detail: data.user }));
+            } catch (e) { /* ignore server-side or unexpected environments */ }
+
             // Redirect based on role returned
             if (data.user?.role === 'admin' || data.user?.role === 'staff') {
                 router.push('/admin');
@@ -85,7 +90,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-accent text-dark font-semibold text-[10px] uppercase tracking-[0.2em] py-4 hover:bg-accent/80 transition-colors disabled:opacity-50"
+                        className="w-full bg-primary text-dark font-semibold text-[10px] uppercase tracking-[0.2em] py-4 hover:bg-accent/80 transition-colors disabled:opacity-50"
                     >
                         {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
