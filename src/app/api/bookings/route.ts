@@ -74,13 +74,15 @@ export async function POST(request: Request) {
         }
 
         // Email to Admin (also record a notification entry)
-        const adminEmail = process.env.SMTP_USER || process.env.EMAIL_USER || 'solangesignaturehair@gmail.com';
+        // prefer explicit ADMIN_FALLBACK_EMAIL so admin notifications are delivered even if SMTP_USER changes
+        const adminEmail = process.env.ADMIN_FALLBACK_EMAIL || process.env.SMTP_USER || process.env.EMAIL_USER || 'solangesignaturehair@gmail.com';
         try {
             await sendEmail({
                 to: adminEmail,
                 subject: `New Booking: ${booking.clientName} - ${booking.confirmationNumber}`,
                 text: `New booking from ${booking.clientName} (${booking.clientEmail}) - ${booking.confirmationNumber}\nService: ${booking.service} - ${new Date(booking.date).toLocaleDateString()} ${booking.time}`,
                 fromName: 'New Booking',
+                fromAddress: process.env.FROM_EMAIL || process.env.SMTP_USER || 'info@solangesignaturehair.hair',
                 html: `
                     <div style="font-family: serif; color: #1a1a1a; max-width: 600px; margin: auto;">
                         <h1 style="color: #C5A059;">New Reservation</h1>
