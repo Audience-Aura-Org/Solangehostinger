@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 // ─── Types ───────────────────────────────────────
 type SizeVariant = { id: string; size: string; price: number; duration: number };
@@ -188,6 +188,16 @@ export default function AdminServicesPage() {
         }
     };
 
+    const groupedServices = useMemo(() => {
+        const groups: Record<string, { originalIndex: number; service: ServiceCategory }[]> = {};
+        services.forEach((service, index) => {
+            const cat = service.category || 'Braiding';
+            if (!groups[cat]) groups[cat] = [];
+            groups[cat].push({ originalIndex: index, service });
+        });
+        return groups;
+    }, [services]);
+
     if (loading) {
         return (
             <div className="max-w-4xl py-12 text-center text-[9px] uppercase tracking-widest text-[#404040] animate-pulse">
@@ -262,55 +272,64 @@ export default function AdminServicesPage() {
                 </div>
             )}
 
-            {/* ─── Service Categories ─── */}
-            <div className="space-y-4">
-                {services.map((svc, si) => (
-                    <div key={svc.id} className="border border-[#141414] bg-[#060606]">
-
-                        {/* Category Header */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-b border-[#141414]">
-                            <span className="text-[8px] sm:text-[9px] font-mono text-[#404040] w-5 shrink-0">0{si + 1}</span>
-                            <input
-                                value={svc.name}
-                                onChange={e => updateCat(si, 'name', e.target.value)}
-                                className="flex-1 min-w-0 bg-transparent text-xs sm:text-sm font-serif text-[#FDFBF7] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
-                            />
-                            <input
-                                value={svc.description}
-                                onChange={e => updateCat(si, 'description', e.target.value)}
-                                placeholder="Desc..."
-                                className="hidden lg:flex flex-1 min-w-0 bg-transparent text-[10px] text-[#404040] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
-                            />
-                            <div className="flex flex-col">
-                                <label className="text-[7px] uppercase tracking-widest text-[#222]">Category</label>
-                                <input
-                                    value={svc.category}
-                                    onChange={e => updateCat(si, 'category', e.target.value)}
-                                    placeholder="Category..."
-                                    className="bg-transparent text-[9px] text-[#C5A059] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
-                                />
-                            </div>
-                            <button
-                                onClick={() => removeCat(si)}
-                                className="text-[7px] sm:text-[8px] uppercase tracking-widest text-[#303030] hover:text-red-500/80 transition-colors ml-auto shrink-0"
-                            >
-                                Delete
-                            </button>
+            {/* ─── Service Categories Grouped ─── */}
+            <div className="space-y-12">
+                {Object.entries(groupedServices).map(([groupName, items]) => (
+                    <div key={groupName} className="space-y-6">
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-[10px] uppercase tracking-[0.4em] text-[#C5A059] font-bold">{groupName}</h2>
+                            <div className="h-px bg-[#141414] flex-1"></div>
                         </div>
+                        <div className="space-y-4">
+                            {items.map(({ originalIndex: si, service: svc }) => (
+                                <div key={svc.id} className="border border-[#141414] bg-[#060606]">
+                                    {/* Category Header */}
+                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-b border-[#141414]">
+                                        <span className="text-[8px] sm:text-[9px] font-mono text-[#404040] w-5 shrink-0">{si + 1}</span>
+                                        <input
+                                            value={svc.name}
+                                            onChange={e => updateCat(si, 'name', e.target.value)}
+                                            className="flex-1 min-w-0 bg-transparent text-xs sm:text-sm font-serif text-[#FDFBF7] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
+                                        />
+                                        <input
+                                            value={svc.description}
+                                            onChange={e => updateCat(si, 'description', e.target.value)}
+                                            placeholder="Desc..."
+                                            className="hidden lg:flex flex-1 min-w-0 bg-transparent text-[10px] text-[#404040] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
+                                        />
+                                        <div className="flex flex-col">
+                                            <label className="text-[7px] uppercase tracking-widest text-[#222]">Category</label>
+                                            <input
+                                                value={svc.category}
+                                                onChange={e => updateCat(si, 'category', e.target.value)}
+                                                placeholder="Category..."
+                                                className="bg-transparent text-[9px] text-[#C5A059] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={() => removeCat(si)}
+                                            className="text-[7px] sm:text-[8px] uppercase tracking-widest text-[#303030] hover:text-red-500/80 transition-colors ml-auto shrink-0"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
 
-                        {/* Size Variants */}
-                        {svc.sizes.map((sz, zi) => (
-                            <SizeRow key={sz.id} sz={sz} si={si} zi={zi} onUpdate={updateSize} onRemove={removeSize} />
-                        ))}
+                                    {/* Size Variants */}
+                                    {svc.sizes.map((sz, zi) => (
+                                        <SizeRow key={sz.id} sz={sz} si={si} zi={zi} onUpdate={updateSize} onRemove={removeSize} />
+                                    ))}
 
-                        {/* Add Size Button */}
-                        <div className="px-6 py-3 border-t border-[#0E0E0E]">
-                            <button
-                                onClick={() => addSize(si)}
-                                className="text-[8px] uppercase tracking-[0.25em] text-[#404040] hover:text-[#C5A059] transition-colors"
-                            >
-                                + Add Size Variant
-                            </button>
+                                    {/* Add Size Button */}
+                                    <div className="px-6 py-3 border-t border-[#0E0E0E]">
+                                        <button
+                                            onClick={() => addSize(si)}
+                                            className="text-[8px] uppercase tracking-[0.25em] text-[#404040] hover:text-[#C5A059] transition-colors"
+                                        >
+                                            + Add Size Variant
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 ))}

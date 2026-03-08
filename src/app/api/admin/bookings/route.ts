@@ -92,3 +92,24 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+
+export async function DELETE(request: Request) {
+    if (!(await verifyAdmin())) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        await connectToDatabase();
+        const { searchParams } = new URL(request.url);
+        const deleteAll = searchParams.get('all') === 'true';
+
+        if (deleteAll) {
+            await Booking.deleteMany({});
+            return NextResponse.json({ message: 'All bookings deleted successfully' });
+        }
+
+        return NextResponse.json({ error: 'Missing confirmation parameter' }, { status: 400 });
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

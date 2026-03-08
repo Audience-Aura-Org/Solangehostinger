@@ -97,7 +97,7 @@ export default function AdminBookingsPage() {
                     onChange={e => setSearch(e.target.value)}
                     className="bg-transparent border-b border-[#222] px-0 py-2 text-xs text-[#FDFBF7] placeholder-gray-600 focus:outline-none focus:border-[#C5A059] w-full sm:w-72 transition-colors"
                 />
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1 items-center">
                     {['all', 'upcoming', 'confirmed', 'completed', 'cancelled'].map(s => (
                         <button
                             key={s}
@@ -110,6 +110,23 @@ export default function AdminBookingsPage() {
                             {s}
                         </button>
                     ))}
+                    <div className="h-4 w-px bg-[#141414] mx-2 hidden sm:block"></div>
+                    <button
+                        onClick={async () => {
+                            if (!confirm('CRITICAL: This will permanently delete ALL booking records. This action cannot be undone. Proceed for production reset?')) return;
+                            const res = await fetch('/api/admin/bookings?all=true', { method: 'DELETE' });
+                            if (res.ok) {
+                                alert('All records cleared.');
+                                fetchBookings(1);
+                            } else {
+                                const d = await res.json();
+                                alert(`Failed to clear records: ${d.error}`);
+                            }
+                        }}
+                        className="px-4 py-2 text-[8px] uppercase tracking-[0.25em] text-red-500/40 hover:text-red-500 transition-colors font-bold"
+                    >
+                        Clear All Records
+                    </button>
                 </div>
             </div>
 
