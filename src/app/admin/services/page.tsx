@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 
 // ─── Types ───────────────────────────────────────
 type SizeVariant = { id: string; size: string; price: number; duration: number };
-type ServiceCategory = { id: string; name: string; description: string; sizes: SizeVariant[] };
+type ServiceCategory = { id: string; name: string; category: string; description: string; sizes: SizeVariant[] };
 
 const DEFAULT_SERVICES: ServiceCategory[] = [
     {
-        id: 'box-braids', name: 'Premium Box Braids', description: 'Classic tension-free structural partings.',
+        id: 'box-braids', name: 'Premium Box Braids', category: 'Braiding', description: 'Classic tension-free structural partings.',
         sizes: [
             { id: 'bb-s', size: 'Small', price: 250, duration: 360 },
             { id: 'bb-m', size: 'Medium', price: 200, duration: 240 },
@@ -16,7 +16,7 @@ const DEFAULT_SERVICES: ServiceCategory[] = [
         ],
     },
     {
-        id: 'knotless-braids', name: 'Knotless Braids', description: 'Seamless, painless roots with an invisible finish.',
+        id: 'knotless-braids', name: 'Knotless Braids', category: 'Braiding', description: 'Seamless, painless roots with an invisible finish.',
         sizes: [
             { id: 'kb-s', size: 'Small', price: 300, duration: 420 },
             { id: 'kb-m', size: 'Medium', price: 250, duration: 300 },
@@ -24,7 +24,7 @@ const DEFAULT_SERVICES: ServiceCategory[] = [
         ],
     },
     {
-        id: 'cornrows', name: 'Signature Cornrows', description: 'Architectural straight-backs or custom patterns.',
+        id: 'cornrows', name: 'Signature Cornrows', category: 'Cornrows', description: 'Architectural straight-backs or custom patterns.',
         sizes: [
             { id: 'cr-s', size: 'Small / Detailed Pattern', price: 180, duration: 240 },
             { id: 'cr-m', size: 'Medium / Standard 6-8', price: 120, duration: 120 },
@@ -138,8 +138,8 @@ export default function AdminServicesPage() {
         setSaved(false);
     };
 
-    // Update category name/description
-    const updateCat = (si: number, key: 'name' | 'description', val: string) => {
+    // Update category name/description/category
+    const updateCat = (si: number, key: 'name' | 'description' | 'category', val: string) => {
         setServices(prev => {
             const s = [...prev];
             s[si] = { ...s[si], [key]: val };
@@ -161,6 +161,7 @@ export default function AdminServicesPage() {
         const newCat: ServiceCategory = {
             id: genId(newCatName),
             name: newCatName.trim(),
+            category: 'Braiding',
             description: newCatDesc.trim(),
             sizes: [{ id: genId('size'), size: 'Small', price: 0, duration: 60 }],
         };
@@ -278,8 +279,17 @@ export default function AdminServicesPage() {
                                 value={svc.description}
                                 onChange={e => updateCat(si, 'description', e.target.value)}
                                 placeholder="Desc..."
-                                className="hidden sm:flex flex-1 min-w-0 bg-transparent text-[10px] text-[#404040] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
+                                className="hidden lg:flex flex-1 min-w-0 bg-transparent text-[10px] text-[#404040] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
                             />
+                            <div className="flex flex-col">
+                                <label className="text-[7px] uppercase tracking-widest text-[#222]">Category</label>
+                                <input
+                                    value={svc.category}
+                                    onChange={e => updateCat(si, 'category', e.target.value)}
+                                    placeholder="Category..."
+                                    className="bg-transparent text-[9px] text-[#C5A059] focus:outline-none border-b border-transparent focus:border-[#333] py-0.5 transition-colors"
+                                />
+                            </div>
                             <button
                                 onClick={() => removeCat(si)}
                                 className="text-[7px] sm:text-[8px] uppercase tracking-widest text-[#303030] hover:text-red-500/80 transition-colors ml-auto shrink-0"

@@ -26,6 +26,7 @@ export interface IAdminSettings extends Document {
   services: Array<{
     id: string;
     name: string;
+    category: string;
     description: string;
     sizes: Array<{
       id: string;
@@ -67,6 +68,7 @@ const AdminSettingsSchema = new Schema<IAdminSettings>(
       {
         id: String,
         name: String,
+        category: { type: String, default: 'Braiding' },
         description: String,
         sizes: [
           {

@@ -1,39 +1,176 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { jsPDF } from 'jspdf';
 
 type ServiceSize = { id: string; name: string; price: number; duration: number };
-type StyleCategory = { id: string; name: string; description: string; tag: string; sizes: ServiceSize[] };
+type StyleCategory = { id: string; name: string; category: string; description: string; tag: string; sizes: ServiceSize[] };
 type Addon = { _id: string; name: string; description: string; price: number; duration: number; linkedCategories: string[]; linkedSizes: string[] };
 
-const styleCategories: StyleCategory[] = [
+const FALLBACK_SERVICES: StyleCategory[] = [
+  // 1. Knotless Braids
   {
-    id: 'box-braids', name: 'Premium Box Braids', tag: 'Most popular',
-    description: 'Classic tension-free structural partings with a clean squared finish.',
+    id: 'extra-small-knotless', name: 'Extra Small Knotless', category: 'Knotless Braids', tag: 'Elite',
+    description: 'Ultra-fine, long-lasting protective style with minimal tension.',
     sizes: [
-      { id: 'bb-s', name: 'Small', price: 250, duration: 360 },
-      { id: 'bb-m', name: 'Medium', price: 200, duration: 240 },
-      { id: 'bb-l', name: 'Large', price: 150, duration: 180 },
+      { id: 'xs-shoulder', name: 'Shoulder Length', price: 320, duration: 420 },
+      { id: 'xs-mid-back', name: 'Mid Back', price: 350, duration: 480 },
+      { id: 'xs-waist', name: 'Waist Length', price: 380, duration: 540 },
+      { id: 'xs-hip', name: 'Hip Length', price: 420, duration: 600 },
+      { id: 'xs-thigh', name: 'Thigh Length', price: 450, duration: 660 },
     ],
   },
   {
-    id: 'knotless-braids', name: 'Knotless Braids', tag: 'Signature',
-    description: 'Seamless, painless roots — no tension, no bulge, invisible finish.',
+    id: 'small-knotless', name: 'Small Knotless', category: 'Knotless Braids', tag: 'Classic',
+    description: 'Classic small knotless braids for a seamless, natural look.',
     sizes: [
-      { id: 'kb-s', name: 'Small', price: 300, duration: 420 },
-      { id: 'kb-m', name: 'Medium', price: 250, duration: 300 },
-      { id: 'kb-l', name: 'Large', price: 200, duration: 240 },
+      { id: 's-bob', name: 'Bob Length', price: 250, duration: 300 },
+      { id: 's-shoulder', name: 'Shoulder Length', price: 250, duration: 300 },
+      { id: 's-mid-back', name: 'Mid Back', price: 300, duration: 360 },
+      { id: 's-waist', name: 'Waist Length', price: 300, duration: 360 },
+      { id: 's-hip', name: 'Hip Length', price: 350, duration: 420 },
+      { id: 's-thigh', name: 'Thigh Length', price: 400, duration: 480 },
     ],
   },
   {
-    id: 'cornrows', name: 'Signature Cornrows', tag: 'Editorial',
-    description: 'Architectural straight-backs or custom braided patterns by appointment.',
+    id: 'medium-knotless', name: 'Medium Knotless', category: 'Knotless Braids', tag: 'Versatile',
+    description: 'Versatile medium-sized braids for everyday elegance.',
     sizes: [
-      { id: 'cr-s', name: 'Small / Detailed Pattern', price: 180, duration: 240 },
-      { id: 'cr-m', name: 'Medium / 6-8 Rows', price: 120, duration: 120 },
-      { id: 'cr-l', name: 'Large / 2-4 Feed-ins', price: 80, duration: 90 },
+      { id: 'm-bob', name: 'Bob Length', price: 150, duration: 180 },
+      { id: 'm-shoulder', name: 'Shoulder Length', price: 150, duration: 180 },
+      { id: 'm-mid-back', name: 'Mid Back', price: 180, duration: 240 },
+      { id: 'm-waist', name: 'Waist Length', price: 180, duration: 240 },
+      { id: 'm-hip', name: 'Hip Length', price: 220, duration: 300 },
+      { id: 'm-thigh', name: 'Thigh Length', price: 250, duration: 360 },
+    ],
+  },
+  {
+    id: 'large-knotless', name: 'Large Knotless', category: 'Knotless Braids', tag: 'Bold',
+    description: 'Bold, beautiful, and faster to install.',
+    sizes: [
+      { id: 'l-bob', name: 'Bob Length', price: 150, duration: 150 },
+      { id: 'l-shoulder', name: 'Shoulder Length', price: 150, duration: 150 },
+      { id: 'l-mid-back', name: 'Mid Back', price: 170, duration: 180 },
+      { id: 'l-waist', name: 'Waist Length', price: 170, duration: 180 },
+      { id: 'l-hip', name: 'Hip Length', price: 200, duration: 240 },
+      { id: 'l-thigh', name: 'Thigh Length', price: 230, duration: 300 },
+    ],
+  },
+  {
+    id: 'jumbo-knotless', name: 'Jumbo Knotless', category: 'Knotless Braids', tag: 'Statement',
+    description: 'Extreme volume and quick installation for a dramatic statement.',
+    sizes: [
+      { id: 'j-mid-back', name: 'Mid Back', price: 150, duration: 120 },
+      { id: 'j-waist', name: 'Waist Length', price: 150, duration: 120 },
+      { id: 'j-hip', name: 'Hip Length', price: 180, duration: 180 },
+    ],
+  },
+  // 2. Boho / Goddess Braids
+  {
+    id: 'boho-knotless', name: 'Boho Knotless', category: 'Boho / Goddess Braids', tag: 'Artistic',
+    description: 'Beautiful knotless braids with loose curly strands throughout.',
+    sizes: [
+      { id: 'boho-s-shoulder', name: 'Small Shoulder', price: 250, duration: 300 },
+      { id: 'boho-s-mid', name: 'Small Mid Back', price: 300, duration: 360 },
+      { id: 'boho-s-waist', name: 'Small Waist', price: 330, duration: 420 },
+      { id: 'boho-m-shoulder', name: 'Medium Shoulder', price: 180, duration: 240 },
+      { id: 'boho-m-waist', name: 'Medium Waist', price: 250, duration: 300 },
+    ],
+  },
+  {
+    id: 'goddess-box-braids', name: 'Goddess Box Braids', category: 'Boho / Goddess Braids', tag: 'Traditional',
+    description: 'Classic box braids with curly ends or loose strands.',
+    sizes: [
+      { id: 'gbb-s-shoulder', name: 'Small Shoulder', price: 250, duration: 300 },
+      { id: 'gbb-s-waist', name: 'Small Waist', price: 300, duration: 360 },
+    ],
+  },
+  // 3. Cornrows
+  {
+    id: 'straight-back-cornrows', name: 'Straight Back Cornrows', category: 'Cornrows', tag: 'Sleek',
+    description: 'Classic uniform cornrows for a clean and sleek look.',
+    sizes: [
+      { id: 'sb-2', name: '2 Braids', price: 50, duration: 45 },
+      { id: 'sb-4', name: '4 Braids', price: 50, duration: 60 },
+      { id: 'sb-6', name: '6 Braids', price: 70, duration: 90 },
+      { id: 'sb-8', name: '8 Braids', price: 90, duration: 120 },
+      { id: 'sb-10', name: '10 Braids', price: 100, duration: 150 },
+      { id: 'sb-12', name: '12 Braids', price: 120, duration: 180 },
+    ],
+  },
+  {
+    id: 'feed-in-cornrows', name: 'Feed-In Cornrows', category: 'Cornrows', tag: 'Natural',
+    description: 'Cornrows where extensions are added gradually for a more natural root.',
+    sizes: [
+      { id: 'fi-2', name: '2 Feed-In', price: 40, duration: 60 },
+      { id: 'fi-4', name: '4 Feed-In', price: 40, duration: 90 },
+      { id: 'fi-6', name: '6 Feed-In', price: 70, duration: 120 },
+      { id: 'fi-8', name: '8 Feed-In', price: 90, duration: 150 },
+      { id: 'fi-10', name: '10 Feed-In', price: 110, duration: 180 },
+    ],
+  },
+  {
+    id: 'stitch-braids', name: 'Stitch Braids', category: 'Cornrows', tag: 'Textured',
+    description: 'Textured cornrows with horizontal lines (stitches) for extra detail.',
+    sizes: [
+      { id: 'st-2', name: '2 Stitch', price: 60, duration: 75 },
+      { id: 'st-4', name: '4 Stitch', price: 60, duration: 100 },
+      { id: 'st-6', name: '6 Stitch', price: 90, duration: 140 },
+      { id: 'st-8', name: '8 Stitch', price: 120, duration: 180 },
+    ],
+  },
+  {
+    id: 'tribal-fulani-braids', name: 'Tribal / Fulani Braids', category: 'Cornrows', tag: 'Cultural',
+    description: 'Intricate patterns with extensions, symbolic of the Fulani people.',
+    sizes: [
+      { id: 'tf-shoulder', name: 'Shoulder Length', price: 200, duration: 180 },
+      { id: 'tf-mid-back', name: 'Mid Back', price: 220, duration: 240 },
+      { id: 'tf-waist', name: 'Waist Length', price: 250, duration: 300 },
+    ],
+  },
+  {
+    id: 'lemonade-braids', name: 'Lemonade Braids', category: 'Cornrows', tag: 'Famous',
+    description: 'Long-side-swept cornrows famous for their signature silhouette.',
+    sizes: [
+      { id: 'lb-shoulder', name: 'Shoulder', price: 150, duration: 150 },
+      { id: 'lb-mid-back', name: 'Mid Back', price: 180, duration: 210 },
+      { id: 'lb-waist', name: 'Waist', price: 200, duration: 240 },
+    ],
+  },
+  // 4. Twists
+  {
+    id: 'senegalese-twists', name: 'Senegalese Twists', category: 'Twists', tag: 'Smooth',
+    description: 'Smooth, uniform two-strand twists for an elegant look.',
+    sizes: [
+      { id: 'sen-s-shoulder', name: 'Small Shoulder', price: 250, duration: 300 },
+      { id: 'sen-s-waist', name: 'Small Waist', price: 300, duration: 360 },
+      { id: 'sen-m-shoulder', name: 'Medium Shoulder', price: 200, duration: 240 },
+      { id: 'sen-m-waist', name: 'Medium Waist', price: 250, duration: 300 },
+    ],
+  },
+  // 5. Kids Services
+  {
+    id: 'kids-knotless', name: 'Kids Knotless', category: 'Kids Services', tag: 'Gentle',
+    description: 'Tension-free knotless braids scaled for children.',
+    sizes: [
+      { id: 'kids-k-mid', name: 'Mid Back', price: 150, duration: 180 },
+    ],
+  },
+  {
+    id: 'kids-box-braids', name: 'Kids Box Braids', category: 'Kids Services', tag: 'Protective',
+    description: 'Classic box braids scaled for children.',
+    sizes: [
+      { id: 'kids-bb-mid', name: 'Mid Back', price: 150, duration: 150 },
+    ],
+  },
+  {
+    id: 'kids-cornrows', name: 'Kids Cornrows', category: 'Kids Services', tag: 'Fast',
+    description: 'Simple and protective children\'s cornrows.',
+    sizes: [
+      { id: 'kids-cr-4', name: '4 Braids', price: 40, duration: 60 },
+      { id: 'kids-cr-6', name: '6 Braids', price: 50, duration: 90 },
+      { id: 'kids-cr-8', name: '8 Braids', price: 70, duration: 120 },
     ],
   },
 ];
@@ -41,7 +178,7 @@ const styleCategories: StyleCategory[] = [
 const AVAILABLE_TIMES = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:30 PM', '4:30 PM'];
 const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-type Step = 'category' | 'size' | 'addons' | 'datetime' | 'info' | 'confirmation';
+type Step = 'mainCategory' | 'style' | 'size' | 'addons' | 'datetime' | 'info' | 'confirmation';
 
 function formatDuration(mins: number) {
   const h = Math.floor(mins / 60);
@@ -63,20 +200,22 @@ function getDays() {
 }
 
 const STEPS: Record<Step, { n: string; label: string }> = {
-  category: { n: '01', label: 'Select Style' },
-  size: { n: '02', label: 'Select Size' },
-  addons: { n: '03', label: 'Add Extra' },
-  datetime: { n: '04', label: 'Date & Time' },
-  info: { n: '05', label: 'Your Details' },
-  confirmation: { n: '06', label: 'Confirmed' },
+  mainCategory: { n: '01', label: 'Service Type' },
+  style: { n: '02', label: 'Select Style' },
+  size: { n: '03', label: 'Select Size' },
+  addons: { n: '04', label: 'Add Extra' },
+  datetime: { n: '05', label: 'Date & Time' },
+  info: { n: '06', label: 'Your Details' },
+  confirmation: { n: '07', label: 'Confirmed' },
 };
 
 export default function BookingPage() {
-  const [step, setStep] = useState<Step>('category');
+  const [step, setStep] = useState<Step>('mainCategory');
   const [categories, setCategories] = useState<StyleCategory[]>([]);
   const [addons, setAddons] = useState<Addon[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [selectedMainCategory, setSelectedMainCategory] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<StyleCategory | null>(null);
   const [selectedSize, setSelectedSize] = useState<ServiceSize | null>(null);
   const [selectedAddons, setSelectedAddons] = useState<Addon[]>([]);
@@ -89,14 +228,14 @@ export default function BookingPage() {
     try {
       const stored = localStorage.getItem('solangeClientInfo');
       if (stored) setFormData(JSON.parse(stored));
-    } catch {}
+    } catch { }
   }, []);
 
   // persist changes so returning users don't have to retype
   useEffect(() => {
     try {
       localStorage.setItem('solangeClientInfo', JSON.stringify(formData));
-    } catch {}
+    } catch { }
   }, [formData]);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -113,6 +252,7 @@ export default function BookingPage() {
           setCategories(dbServices.map((s: any) => ({
             id: s.id,
             name: s.name,
+            category: s.category || 'Braiding',
             description: s.description,
             tag: 'Classic',
             sizes: s.sizes.map((sz: any) => ({
@@ -123,12 +263,12 @@ export default function BookingPage() {
             }))
           })));
         } else {
-          setCategories(styleCategories);
+          setCategories(FALLBACK_SERVICES);
         }
         setAddons(addonsData.addons || []);
       })
       .catch(() => {
-        setCategories(styleCategories);
+        setCategories(FALLBACK_SERVICES);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -246,6 +386,12 @@ export default function BookingPage() {
     doc.save(`Solange-Ticket-${confirmationNumber}.pdf`);
   };
 
+  const handleMainCategorySelect = (mainCat: string) => {
+    setSelectedMainCategory(mainCat);
+    setStep('style');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleCategorySelect = (cat: StyleCategory) => {
     setSelectedCategory(cat);
     if (cat.sizes.length === 1) {
@@ -255,6 +401,17 @@ export default function BookingPage() {
     else { setSelectedSize(null); setStep('size'); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const mainCategories = useMemo(() => {
+    const cats = new Set<string>();
+    categories.forEach(s => cats.add(s.category || 'Braiding'));
+    return Array.from(cats);
+  }, [categories]);
+
+  const stylesInSelectedCategory = useMemo(() => {
+    if (!selectedMainCategory) return [];
+    return categories.filter(s => s.category === selectedMainCategory);
+  }, [categories, selectedMainCategory]);
 
   const handleSizeSelect = (size: ServiceSize) => {
     setSelectedSize(size);
@@ -390,12 +547,39 @@ export default function BookingPage() {
           {/* Main Wizard Content */}
           <div className="flex-1 w-full min-h-[480px]">
 
-            {/* ── Step 1: Choose Style ── */}
-            {step === 'category' && (
+            {/* ── Step 1: Choose Main Category ── */}
+            {step === 'mainCategory' && (
               <div className="w-full">
-                <p className="text-[9px] uppercase tracking-[0.35em] text-[#8A8070] mb-6">Choose your base style</p>
+                <p className="text-[9px] uppercase tracking-[0.35em] text-[#8A8070] mb-6">Choose service category</p>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {mainCategories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => handleMainCategorySelect(cat)}
+                      className="group border border-[#141414] bg-[#060606] hover:border-[#C5A059]/40 hover:bg-[#080808] transition-all p-8 text-center flex flex-col items-center gap-4"
+                    >
+                      <span className="text-[10px] uppercase tracking-[0.4em] text-[#C5A059] opacity-40 group-hover:opacity-100 transition-opacity">◇</span>
+                      <h3 className="font-serif text-[#FDFBF7] text-lg group-hover:text-[#C5A059] transition-colors">{cat}</h3>
+                      <p className="text-[9px] uppercase tracking-widest text-[#404040] group-hover:text-[#8A8070]">Explore styles</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 2: Choose Specific Style ── */}
+            {step === 'style' && selectedMainCategory && (
+              <div className="w-full">
+                <div className="flex items-center justify-between mb-6">
+                  <button onClick={() => { setStep('mainCategory'); setSelectedMainCategory(null); }}
+                    className="text-[9px] uppercase tracking-widest text-[#8A8070] hover:text-[#C5A059] transition-colors font-semibold">
+                    ← Categories
+                  </button>
+                  <p className="text-[9px] uppercase tracking-[0.35em] text-[#8A8070]">{selectedMainCategory}</p>
+                </div>
+
                 <div className="space-y-3">
-                  {categories.map(cat => (
+                  {stylesInSelectedCategory.map((cat: StyleCategory) => (
                     <button
                       key={cat.id}
                       onClick={() => handleCategorySelect(cat)}
@@ -408,7 +592,7 @@ export default function BookingPage() {
                         </div>
                         <p className="text-xs text-[#8A8070] leading-relaxed">{cat.description}</p>
                         <p className="text-[9px] text-[#C5A059] mt-2 uppercase tracking-widest">
-                          From ${cat.sizes.length > 0 ? Math.min(...cat.sizes.map(s => s.price)) : 0}
+                          From ${cat.sizes.length > 0 ? Math.min(...cat.sizes.map((s: ServiceSize) => s.price)) : 0}
                         </p>
                       </div>
                       <span className="text-[#404040] group-hover:text-[#C5A059] text-lg transition-colors shrink-0">›</span>
@@ -422,7 +606,7 @@ export default function BookingPage() {
             {step === 'size' && selectedCategory && (
               <div className="w-full">
                 <div className="flex items-center justify-between mb-6">
-                  <button onClick={() => { setStep('category'); setSelectedCategory(null); }}
+                  <button onClick={() => { setStep('style'); setSelectedCategory(null); }}
                     className="text-[9px] uppercase tracking-widest text-[#8A8070] hover:text-[#C5A059] transition-colors">
                     ← Styles
                   </button>
