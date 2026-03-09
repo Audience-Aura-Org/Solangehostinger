@@ -70,7 +70,7 @@ export default function ExperienceSection() {
                         <motion.div key={f.title} variants={itemVariants} className="relative group">
                             <span className="absolute -left-6 -top-4 text-3xl font-serif text-accent transition-colors">0{i + 1}</span>
                             <h3 className="text-xl font-serif text-primary mb-4 border-b border-accent pb-2 inline-block">{f.title}</h3>
-                            <p className="text-xs text-muted font-light leading-relaxed tracking-wide">
+                            <p className="text-[11px] text-muted font-light leading-relaxed tracking-wide">
                                 {f.description}
                             </p>
                         </motion.div>

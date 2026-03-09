@@ -3,12 +3,18 @@
 import Image from 'next/image';
 
 const GALLERY_IMAGES = [
-    '/images/1000055565.jpg',
-    '/images/1000055589.jpg',
-    '/images/1000055614.jpg',
-    '/images/1000055604.jpg',
-    '/images/1000055507-917x1024.jpg',
-    '/images/1000055633-840x1024.jpg',
+    '/images/1.png',
+    '/images/2.png',
+    '/images/3.png',
+    '/images/4.png',
+    '/images/5.png',
+    '/images/6.png',
+    '/images/7.png',
+    '/images/8.png',
+    '/images/9.png',
+    '/images/10.png',
+    '/images/11.png',
+    '/images/12.png',
 ];
 
 export default function GallerySection() {
@@ -19,39 +25,35 @@ export default function GallerySection() {
                 <h2 className="text-4xl md:text-7xl font-serif text-primary">Editorial <span className="italic font-light text-accent">Portfolio</span>.</h2>
             </div>
 
-            <div className="flex overflow-x-auto gap-8 px-6 lg:px-12 pb-12 no-scrollbar snap-x">
+            <div className="flex overflow-x-auto gap-4 md:gap-6 px-6 lg:px-12 pb-12 no-scrollbar snap-x">
                 {GALLERY_IMAGES.map((img, i) => (
-                    <div key={i} className="flex-none w-[300px] md:w-[450px] aspect-[3/4] relative rounded-2xl overflow-hidden border border-surface snap-center group">
+                    <div key={i} className="flex-none w-[200px] md:w-[280px] aspect-[4/5] relative rounded-xl overflow-hidden border border-surface bg-black/20 snap-center group">
                         <Image
                             src={img}
                             alt={`Gallery Image ${i + 1}`}
                             fill
-                            className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                            sizes="(max-width: 768px) 300px, 450px"
-                            priority={i < 2}
+                            style={{ objectFit: 'contain' }}
+                            className="transition-all duration-700 group-hover:scale-105"
+                            sizes="(max-width: 768px) 200px, 280px"
+                            priority={i < 4}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <div className="absolute bottom-8 left-8 right-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100">
-                            <span className="text-[10px] text-accent uppercase tracking-[0.3em]">Signature Hair Edition</span>
-                            <p className="text-lg font-serif text-primary mt-1">La Maison Artistry</p>
-                        </div>
                     </div>
                 ))}
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-12 flex justify-end">
-                <p className="text-muted text-[9px] uppercase tracking-[0.4em]">Scroll to explore archive</p>
+            <div className="max-w-7xl mx-auto px-6 lg:px-12 mt-8 text-center">
+                <p className="text-muted text-[10px] uppercase tracking-[0.4em]">Editorial Collection 2024 • Scroll to explore</p>
             </div>
 
             <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+                .no-scrollbar::-webkit-scrollbar {
+                  display: none;
+                }
+                .no-scrollbar {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
+                }
+            `}</style>
         </section>
     );
 }
