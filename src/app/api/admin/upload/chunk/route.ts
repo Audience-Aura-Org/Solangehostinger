@@ -8,13 +8,10 @@ import { ObjectId } from 'mongodb';
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '4mb', // Keeping under Vercel's strict 4.5MB Serverless limit
-        },
-    },
-};
+// Next.js App Router doesn't use the 'config' export for bodyParser. 
+// Vercel has a hard 4.5MB limit for Serverless Functions.
+// Chunks should stay under that limit.
+
 
 async function verifyAdmin() {
     const cookieStore = await cookies();

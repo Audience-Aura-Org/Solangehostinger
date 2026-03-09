@@ -11,15 +11,10 @@ import { GridFSBucket } from 'mongodb';
 export const maxDuration = 60;       // allow up to 60 s for large file transfers
 export const dynamic = 'force-dynamic';
 
-// Pages-router style config — still respected by some Next.js versions for body parsing
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '100mb',
-        },
-        responseLimit: false,
-    },
-};
+// Next.js App Router doesn't use the 'config' export for bodyParser. 
+// Body size limits are typically handled at the infrastructure/WAF level or 
+// by checking the content-length header/stream size.
+
 
 // ─── Auth helper ──────────────────────────────────────────────────────────────
 async function verifyAdmin() {

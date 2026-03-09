@@ -916,7 +916,7 @@ export default function BookingPage() {
                     Download Ticket
                   </button>
                   <button
-                    onClick={() => { setStep('category'); setSelectedCategory(null); setSelectedSize(null); setSelectedDate(null); setSelectedTime(''); /* keep formData persisted */ setConfirmationNumber(''); }}
+                    onClick={() => { setStep('mainCategory'); setSelectedMainCategory(null); setSelectedCategory(null); setSelectedSize(null); setSelectedDate(null); setSelectedTime(''); /* keep formData persisted */ setConfirmationNumber(''); }}
                     className="border border-[#222] text-[#C8C0B0] hover:border-[#C5A059]/40 hover:text-[#FDFBF7] py-3 px-6 text-[9px] uppercase tracking-widest transition-all">
                     Book Another
                   </button>
