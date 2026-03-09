@@ -87,14 +87,14 @@ function renderFooter() {
         <table role="presentation" width="100%" style="max-width:600px;margin:auto;border-collapse:collapse;font-family: serif;color:${EMAIL_COLORS.text}">
             <tr><td style="padding:20px 0 6px 0;border-top:1px solid ${EMAIL_COLORS.border}"></td></tr>
             <tr>
-                <td style="text-align:center;font-size:11px;color:${EMAIL_COLORS.muted};padding:6px 0">6495 NEW HAMPSHIRE AVE, HYATTSVILLE, MD<br/>+1 301 454 9435 • info@solangesignaturehair.hair</td>
+                <td style="text-align:center;font-size:11px;color:${EMAIL_COLORS.muted};padding:6px 0">8150 LAKECREST DR, GREENBELT, MD 20770<br/>+1 301 454 9435 • info@solangesignaturehair.hair</td>
             </tr>
         </table>
     `;
 }
 
 export function getBookingConfirmationHtml(booking: any) {
-        return `
+    return `
                 <!doctype html>
                 <html>
                 <head>
@@ -162,7 +162,7 @@ export function getAdminBookingNotificationHtml(booking: any, adminLink: string)
                         <tr><td class="muted" style="padding:6px 0;">Email</td><td style="padding:6px 0;">${booking.clientEmail}</td></tr>
                         <tr><td class="muted" style="padding:6px 0;">Phone</td><td style="padding:6px 0;">${booking.clientPhone || 'N/A'}</td></tr>
                         <tr><td class="muted" style="padding:6px 0;">Service</td><td style="padding:6px 0; font-weight:bold;">${booking.service}</td></tr>
-                        <tr><td class="muted" style="padding:6px 0;">Extras</td><td style="padding:6px 0;">${booking.addons && booking.addons.length > 0 ? booking.addons.map((a:any)=>a.name).join(', ') : 'None'}</td></tr>
+                        <tr><td class="muted" style="padding:6px 0;">Extras</td><td style="padding:6px 0;">${booking.addons && booking.addons.length > 0 ? booking.addons.map((a: any) => a.name).join(', ') : 'None'}</td></tr>
                         <tr><td class="muted" style="padding:6px 0;">Date/Time</td><td style="padding:6px 0;">${new Date(booking.date).toLocaleDateString()} at ${booking.time}</td></tr>
                         <tr><td class="muted" style="padding:6px 0;">Hair Color Request</td><td style="padding:6px 0; color:${EMAIL_COLORS.accent}; font-style:italic;">${booking.hairColor || 'None'}</td></tr>
                         <tr><td class="muted" style="padding:6px 0;">Total Price</td><td style="padding:6px 0; font-weight: bold;">$${booking.price}</td></tr>
@@ -192,7 +192,7 @@ export function getAdminBookingNotificationText(booking: any, adminLink: string)
 }
 
 export function getReminderHtml(booking: any, timeRemaining: string) {
-        return `
+    return `
                 <!doctype html>
                 <html>
                 <head>

@@ -82,8 +82,8 @@ export default function ExperienceSection() {
                     <div>
                         <span className="text-[9px] uppercase tracking-[0.4em] text-accent block mb-4">Maison Location</span>
                         <h3 className="text-2xl md:text-3xl font-serif text-primary mb-6 leading-snug">
-                            6495 New Hampshire Ave <br />
-                            <span className="text-accent">Hyattsville</span>
+                            8150 Lakecrest Dr <br />
+                            <span className="text-accent">Greenbelt</span>
                         </h3>
 
                         <div className="flex flex-wrap gap-x-12 gap-y-6">

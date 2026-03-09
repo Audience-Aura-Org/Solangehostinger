@@ -17,7 +17,7 @@ export default function Footer() {
   // Derive display-friendly strings
   const displayEmail = email || 'Experience@solange.hair';
   const displayPhone = phone || '+1 301 454 9435';
-  const displayAddress = address || '6495 New Hampshire Ave\nHyattsville, MD';
+  const displayAddress = address || '8150 Lakecrest Dr\nGreenbelt, MD 20770';
   const addressLines = displayAddress.split('\n').filter(Boolean);
 
   return (

@@ -373,7 +373,7 @@ export default function BookingPage() {
     doc.setFontSize(9);
     doc.text('LA MAISON LOCATION:', 30, startY + 10);
     doc.setFontSize(8);
-    doc.text('6495 New Hampshire Ave, Hyattsville, MD', 30, startY + 18);
+    doc.text('8150 Lakecrest Dr, Greenbelt, MD 20770', 30, startY + 18);
     doc.text('Contact: +1 301 454 9435', 30, startY + 24);
     doc.text('Email: Experience@solange.hair', 30, startY + 30);
 
