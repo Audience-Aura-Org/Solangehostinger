@@ -87,7 +87,7 @@ function renderFooter() {
         <table role="presentation" width="100%" style="max-width:600px;margin:auto;border-collapse:collapse;font-family: serif;color:${EMAIL_COLORS.text}">
             <tr><td style="padding:20px 0 6px 0;border-top:1px solid ${EMAIL_COLORS.border}"></td></tr>
             <tr>
-                <td style="text-align:center;font-size:11px;color:${EMAIL_COLORS.muted};padding:6px 0">8150 LAKECREST DR, GREENBELT, MD 20770<br/>+1 301 454 9435 • info@solangesignaturehair.hair</td>
+                <td style="text-align:center;font-size:11px;color:${EMAIL_COLORS.muted};padding:6px 0">8150 Lakecrest Dr, Greenbelt, MD 20770<br/>+1 301 454 9435 • info@solangesignaturehair.hair</td>
             </tr>
         </table>
     `;
@@ -180,7 +180,7 @@ export function getAdminBookingNotificationHtml(booking: any, adminLink: string)
 }
 
 export function getBookingConfirmationText(booking: any) {
-    return `Reservation Secured - SOLANGE\n\nClient: ${booking.clientName}\nService: ${booking.service}\nDate/Time: ${new Date(booking.date).toLocaleDateString()} at ${booking.time}\nConfirmation: ${booking.confirmationNumber}\n\nPlease arrive with hair pre-washed. $30 deposit required to secure session.`;
+    return `Reservation Secured - SOLANGE\n\nClient: ${booking.clientName}\nService: ${booking.service}\nDate/Time: ${new Date(booking.date).toLocaleDateString()} at ${booking.time}\nConfirmation: ${booking.confirmationNumber}\nAddress: 8150 Lakecrest Dr, Greenbelt, MD 20770\n\nPlease arrive with hair pre-washed. $30 deposit required to secure session.`;
 }
 
 // plain‑text admin booking notification with a link
@@ -223,5 +223,5 @@ export function getReminderHtml(booking: any, timeRemaining: string) {
 }
 
 export function getReminderText(booking: any, timeRemaining: string) {
-    return `Appointment Reminder - SOLANGE\n\nYour session for ${booking.service} is in ${timeRemaining}.\nTime: ${booking.time}\n\nIf you need to reschedule, please contact us.`;
+    return `Appointment Reminder - SOLANGE\n\nYour session for ${booking.service} is in ${timeRemaining}.\nTime: ${booking.time}\nAddress: 8150 Lakecrest Dr, Greenbelt, MD 20770\n\nIf you need to reschedule, please contact us.`;
 }
